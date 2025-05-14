@@ -26,6 +26,30 @@
                             <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $form->description) }}</textarea>
                         </div>
                         
+<!-- কভার ইমেজ ফিল্ড -->
+            <div class="mb-6">
+                <label for="cover_image" class="block text-sm font-medium text-gray-700">Cover Image (Optional)</label>
+                
+                @if($form->cover_image)
+                    <div class="mt-2 mb-4">
+                        <p class="text-sm font-medium text-gray-700">Current Cover Image:</p>
+                        <img src="{{ Storage::url($form->cover_image) }}" alt="Cover Image" class="mt-2 rounded-lg max-h-40">
+                        <p class="mt-1 text-xs text-gray-500">Upload a new image to replace this one.</p>
+                    </div>
+                @endif
+                
+                <input type="file" name="cover_image" id="cover_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100">
+                <p class="mt-1 text-sm text-gray-500">Recommended size: 1200 x 400px. Max 2MB.</p>
+                @error('cover_image')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Form Fields</label>
                             

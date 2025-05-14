@@ -35,7 +35,13 @@
                         <form action="{{ route('forms.public.submit', $form) }}" method="POST">
                             @csrf
                             
-                            <h1 class="text-2xl font-bold mb-2">{{ $form->name }}</h1>
+                            @if($form->cover_image)
+    <div class="mb-4">
+        <img src="{{ Storage::url($form->cover_image) }}" alt="{{ $form->name }}" class="w-full h-auto rounded-lg object-cover" style="max-height: 300px;">
+    </div>
+@endif
+
+<h1 class="text-2xl font-bold mb-2">{{ $form->name }}</h1>
                             
                             @if($form->description)
                                 <p class="mb-6 text-gray-600">{{ $form->description }}</p>

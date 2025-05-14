@@ -15,6 +15,7 @@ class Form extends Model
         'user_id',
         'name',
         'description',
+        'cover_image',
         'fields',
         'submit_button_text',
         'success_message',

@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('forms.store') }}" method="POST" id="form-builder">
+                    <form action="{{ route('forms.store') }}" method="POST" id="form-builder" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-6">
@@ -24,6 +24,20 @@
                             <label for="description" class="block text-sm font-medium text-gray-700">Description (Optional)</label>
                             <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description') }}</textarea>
                         </div>
+
+                       <div class="mb-6">
+                <label for="cover_image" class="block text-sm font-medium text-gray-700">Cover Image (Optional)</label>
+                <input type="file" name="cover_image" id="cover_image" accept="image/*" class="mt-1 block w-full text-sm text-gray-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-md file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100">
+                <p class="mt-1 text-sm text-gray-500">Recommended size: 1200 x 400px. Max 2MB.</p>
+                @error('cover_image')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
                         
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Form Fields</label>

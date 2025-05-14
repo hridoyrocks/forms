@@ -4,9 +4,11 @@ use App\Models\Form;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+
+
 class PublicFormController extends Controller
 {
-    public function show(Form $form, Request $request)  // এখানে Request $request যোগ করেছি
+    public function show(Form $form)
     {
         if (!$form->is_active) {
             abort(404);

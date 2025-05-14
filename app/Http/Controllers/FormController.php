@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class FormController extends Controller
 {
@@ -28,6 +30,7 @@ class FormController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'fields' => 'required|array|min:1',
             'fields.*.name' => 'required|string|max:255',
             'fields.*.type' => 'required|string|in:text,email,phone,number,textarea,select,checkbox,radio',
@@ -37,9 +40,35 @@ class FormController extends Controller
             'success_message' => 'nullable|string',
         ]);
 
+      // ইমেজ আপলোড হ্যান্ডলিং
+        $coverImagePath = null;
+        
+        if ($request->hasFile('cover_image')) {
+            try {
+                // ফোল্ডার চেক
+                if (!Storage::disk('public')->exists('form-covers')) {
+                    Storage::disk('public')->makeDirectory('form-covers');
+                }
+                
+                $coverImagePath = $request->file('cover_image')->store('form-covers', 'public');
+                
+                // লগিং
+                Log::info('Cover image uploaded successfully', [
+                    'path' => $coverImagePath
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Cover image upload failed', [
+                    'error' => $e->getMessage()
+                ]);
+                
+                return back()->withErrors(['cover_image' => 'ইমেজ আপলোড করতে সমস্যা হয়েছে: ' . $e->getMessage()]);
+            }
+        }
+
         $form = Auth::user()->forms()->create([
             'name' => $request->name,
             'description' => $request->description,
+            'cover_image' => $coverImagePath,
             'fields' => $request->fields,
             'submit_button_text' => $request->submit_button_text ?? 'Submit',
             'success_message' => $request->success_message ?? 'Form submitted successfully!',
@@ -70,6 +99,7 @@ class FormController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'fields' => 'required|array|min:1',
             'fields.*.name' => 'required|string|max:255',
             'fields.*.type' => 'required|string|in:text,email,phone,number,textarea,select,checkbox,radio',
@@ -80,9 +110,40 @@ class FormController extends Controller
             'is_active' => 'boolean',
         ]);
 
+       // ইমেজ আপলোড হ্যান্ডলিং
+        $coverImagePath = $form->cover_image;
+        
+        if ($request->hasFile('cover_image')) {
+            try {
+                // আগের ইমেজ থাকলে ডিলিট করুন
+                if ($form->cover_image) {
+                    Storage::disk('public')->delete($form->cover_image);
+                }
+                
+                // ফোল্ডার চেক
+                if (!Storage::disk('public')->exists('form-covers')) {
+                    Storage::disk('public')->makeDirectory('form-covers');
+                }
+                
+                $coverImagePath = $request->file('cover_image')->store('form-covers', 'public');
+                
+                // লগিং
+                Log::info('Cover image updated successfully', [
+                    'path' => $coverImagePath
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Cover image update failed', [
+                    'error' => $e->getMessage()
+                ]);
+                
+                return back()->withErrors(['cover_image' => 'ইমেজ আপডেট করতে সমস্যা হয়েছে: ' . $e->getMessage()]);
+            }
+        }
+
         $form->update([
             'name' => $request->name,
             'description' => $request->description,
+            'cover_image' => $coverImagePath,
             'fields' => $request->fields,
             'submit_button_text' => $request->submit_button_text ?? 'Submit',
             'success_message' => $request->success_message ?? 'Form submitted successfully!',
@@ -111,4 +172,6 @@ class FormController extends Controller
         
         return view('forms.shareable', compact('form', 'url'));
     }
+
+    
 }
