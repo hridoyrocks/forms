@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class PublicFormController extends Controller
 {
-    public function show(Form $form)
+    public function show(Form $form, Request $request)
     {
         if (!$form->is_active) {
             abort(404);
